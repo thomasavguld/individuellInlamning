@@ -20,7 +20,7 @@ let depressionRatesByGender = await dbQuery(`
   GROUP BY gender
 `);
 
-//en kommentar
+//en kommentar och en till 
 
 let depressionRateTotal = await dbQuery(`
   SELECT 
