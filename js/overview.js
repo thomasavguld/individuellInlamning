@@ -58,83 +58,68 @@ FROM studentSurvey
 `)
 
 
+
+
 let depressionGroups = [
   {
     label: 'Depression kvinnor',
-    rate: depressionData.find(x => x.label === 'Kvinnor')?.depressionRate ?? 0
+    rate: depressionData
+      .find(x => x.label === 'Kvinnor')?.depressionRate ?? 0
   },
   {
     label: 'Depression män',
-    rate: depressionData.find(x => x.label === 'Män')?.depressionRate ?? 0
+    rate: depressionData
+      .find(x => x.label === 'Män')?.depressionRate ?? 0
   },
   {
     label: 'Depression totalt',
-    rate: depressionData.find(x => x.label === 'Totalt')?.depressionRate ?? 0
+    rate: depressionData
+      .find(x => x.label === 'Totalt')?.depressionRate ?? 0
   }
 ];
 
 let depressionSuicideGroups = [
   {
     label: 'Depression och suicidala tankar kvinnor',
-    rate: overlapData.find(x => x.label === 'Kvinnor')?.depressionAndSuicidalRate ?? 0
+    rate: depressionSuicideData
+      .find(x => x.label === 'Kvinnor')?.depressionAndSuicidalRate ?? 0
   },
   {
     label: 'Depression och suicidala tankar män',
-    rate: overlapData.find(x => x.label === 'Män')?.depressionAndSuicidalRate ?? 0
+    rate: depressionSuicideData
+      .find(x => x.label === 'Män')?.depressionAndSuicidalRate ?? 0
   },
   {
     label: 'Depression och suicidala tankar totalt',
-    rate: overlapData.find(x => x.label === 'Totalt')?.depressionAndSuicidalRate ?? 0
+    rate: depressionSuicideData
+      .find(x => x.label === 'Totalt')?.depressionAndSuicidalRate ?? 0
   }
 ];
 
 
+/////
+let groupOptions = [
+  { label: 'Depression', data: depressionGroups },
+  { label: 'Depression och suicidala tankar', data: depressionSuicideGroups }
+];
+
+let chosenGroupLabel = addDropdown('Välj grupp', groupOptions.map(x => x.label), 'Depression');
+
+let selectedGroup = groupOptions.find(x => x.label === chosenGroupLabel);
+let chartData = selectedGroup.data.map(x => ({
+  label: x.label,
+  value: x.rate
+}));
 
 
 
-/*
-
-let depressionRateMen = depressionRatesByGender.find(
-  x => x.label?.trim().toLowerCase() === 'män'
-);
-
-let depressionRateWomen = depressionRatesByGender.find(
-  x => x.label?.trim().toLowerCase() === 'kvinnor'
-);
-
-
-
-
-
-
-
-
-let total = (await dbQuery(`
-  SELECT
-    'Totalt' AS label,
-    ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS 'Depression %'
-  FROM studentSurvey
-`)).map(x => x.year);
-
-let currentYear = addDropdown('Kön', total );
-
-addMdToPage(`
-  ## Medeltemperaturer i Malmö ${currentYear}
-`);
-
-let dataForChart = await dbQuery(
-  `SELECT monthNameShort, temperatureC FROM dataWithMonths WHERE year = '${currentYear}'`
-);
-
-
-
-
+/////
 
 
 
 drawGoogleChart({
   type: 'ColumnChart',
-  data: makeChartFriendly(depressionRatesByGender),
+  data: makeChartFriendly(chartData),
   options: {
     legend: { position: 'none' },
     title: 'Depression uppdelat på kön, samt totalt (i procent)',
