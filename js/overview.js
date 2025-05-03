@@ -8,37 +8,85 @@ Male	15528 Depressed: 9100
 Female	12339 Depressed:7207
 `);
 
-let depressionRatesByGender = await dbQuery(`
+let depressionData = await dbQuery(`
   SELECT 
     CASE 
-      WHEN gender = 'Male' THEN 'Män'
-      WHEN gender = 'Female' THEN 'Kvinnor'
-      ELSE gender 
+        WHEN gender = 'Male' THEN 'Män'
+        WHEN gender = 'Female' THEN 'Kvinnor'
+        ELSE gender 
     END AS label,
-    ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS depression
-  FROM studentSurvey
-  GROUP BY gender
-`);
+    ROUND(SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS depressionRate,
+    ROUND(SUM(CASE WHEN suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS suicidalThoughtsRate
+FROM studentSurvey
+GROUP BY gender
 
-//en kommentar och en till 
+UNION ALL
 
-let depressionRateTotal = await dbQuery(`
-  SELECT 
+SELECT 
     'Totalt' AS label,
-    ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS depression
-  FROM studentSurvey
-`);
+    ROUND(SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS depressionRate,
+    ROUND(SUM(CASE WHEN suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS suicidalThoughtsRate
+FROM studentSurvey
+`)
 
-let depressionOptions = [
-  ...depressionRateTotal,   // array with 1 object
-  ...depressionRatesByGender // array of gender-based data
+
+let depressionSuicideData = await dbQuery(`
+  SELECT 
+  CASE 
+    WHEN gender = 'Male' THEN 'Män'
+    WHEN gender = 'Female' THEN 'Kvinnor'
+    ELSE gender
+  END AS label,
+  ROUND(
+    SUM(CASE WHEN depression = 1 AND suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / 
+    COUNT(*), 
+    2
+  ) AS depressionAndSuicidalRate
+FROM studentSurvey
+GROUP BY gender
+
+UNION ALL
+
+SELECT 
+  'Totalt' AS label,
+  ROUND(
+    SUM(CASE WHEN depression = 1 AND suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / 
+    COUNT(*), 
+    2
+  ) AS depressionAndSuicidalRate
+FROM studentSurvey
+`)
+
+
+let depressionGroups = [
+  {
+    label: 'Depression kvinnor',
+    rate: depressionData.find(x => x.label === 'Kvinnor')?.depressionRate ?? 0
+  },
+  {
+    label: 'Depression män',
+    rate: depressionData.find(x => x.label === 'Män')?.depressionRate ?? 0
+  },
+  {
+    label: 'Depression totalt',
+    rate: depressionData.find(x => x.label === 'Totalt')?.depressionRate ?? 0
+  }
 ];
 
-let genderDropdown = addDropdown('kön', depressionOptions.map(option => option.label));
-
-console.log(depressionOptions)
-console.log(genderDropdown)
-
+let depressionSuicideGroups = [
+  {
+    label: 'Depression och suicidala tankar kvinnor',
+    rate: overlapData.find(x => x.label === 'Kvinnor')?.depressionAndSuicidalRate ?? 0
+  },
+  {
+    label: 'Depression och suicidala tankar män',
+    rate: overlapData.find(x => x.label === 'Män')?.depressionAndSuicidalRate ?? 0
+  },
+  {
+    label: 'Depression och suicidala tankar totalt',
+    rate: overlapData.find(x => x.label === 'Totalt')?.depressionAndSuicidalRate ?? 0
+  }
+];
 
 
 
@@ -46,57 +94,65 @@ console.log(genderDropdown)
 
 /*
 
-drawGoogleChart({
-  type: 'ColumnChart',
-  data: makeChartFriendly(chartData),
-  options: {
-    legend: { position: 'none' },
-    title: 'Depression uppdelat på kön, samt totalt (i procent)',
-    height: 500,
-    chartArea: { left: 80 },
-    vAxis: {
-      viewWindow: { min: 0, max: 100 }
-    },
-    hAxis: {
-      viewWindow: { min: 0 }
-    },
-    colors: ['#bb2a2b', '#998466', '#958866']
-  }
-});
+let depressionRateMen = depressionRatesByGender.find(
+  x => x.label?.trim().toLowerCase() === 'män'
+);
 
-
-
-drawGoogleChart({
-  type: 'ColumnChart',
-  data: makeChartFriendly(chartData),
-  options: {
-    legend: { position: 'none' },
-    title: 'Depression uppdelat på kön, samt totalt (i procent)',
-    height: 500,
-    chartArea: { left: 80 },
-    colors: ['#bb2a2b', '#998466', '#958866'],
-    vAxis: {
-      viewWindow: { min: 0, max: 100 }
-    },
-    hAxis: {
-      viewWindow: { min: 0 }
-    }
-  }
-});
+let depressionRateWomen = depressionRatesByGender.find(
+  x => x.label?.trim().toLowerCase() === 'kvinnor'
+);
 
 
 
 
 
-///
 
-/*
-let depressionRateTotal = await dbQuery(`
+
+
+let total = (await dbQuery(`
   SELECT
     'Totalt' AS label,
     ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS 'Depression %'
   FROM studentSurvey
-  `);
+`)).map(x => x.year);
+
+let currentYear = addDropdown('Kön', total );
+
+addMdToPage(`
+  ## Medeltemperaturer i Malmö ${currentYear}
+`);
+
+let dataForChart = await dbQuery(
+  `SELECT monthNameShort, temperatureC FROM dataWithMonths WHERE year = '${currentYear}'`
+);
+
+
+
+
+
+
+
+drawGoogleChart({
+  type: 'ColumnChart',
+  data: makeChartFriendly(depressionRatesByGender),
+  options: {
+    legend: { position: 'none' },
+    title: 'Depression uppdelat på kön, samt totalt (i procent)',
+    height: 500,
+    chartArea: { left: 80 },
+    vAxis: {
+      viewWindow: { min: 0, max: 100 }
+    },
+    hAxis: {
+      viewWindow: { min: 0 }
+    },
+    colors: ['pink', 'blue']
+  }
+});
+
+
+/*
+
 
 let depressionRateWomen = (await dbQuery(
   `SELECT
@@ -123,6 +179,48 @@ let depressionRates = (await dbQuery(
 )).filter(x =>
   (x.label === 'Kvinnor' || x.label === 'Män') && x.depression > 0
 );
+
+
+
+
+
+let depressionRateWomen = (await dbQuery(
+  `SELECT
+IF(gender = 'Male', 'Män', IF(gender = 'Female', 'Kvinnor', gender)) AS label,
+  ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS 'depression'
+FROM studentSurvey
+GROUP BY gender`
+)).filter(x => x.label === 'Kvinnor' && x.depression > 0);
+
+console.log('depressionRateWomen', depressionRateWomen)
+
+let depressionRateMen = (await dbQuery(
+  `SELECT
+IF(gender = 'Male', 'Män', IF(gender = 'Female', 'Kvinnor', gender)) AS label,
+  ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS 'depression'
+FROM studentSurvey
+GROUP BY gender`
+)).filter(x => x.label === 'Män' && x.depression > 0);
+
+
+let depressionRatesByGender = await dbQuery(`
+  SELECT
+    CASE
+      WHEN gender = 'Male' THEN 'Män'
+      WHEN gender = 'Female' THEN 'Kvinnor'
+      ELSE gender
+    END AS label,
+    ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS depression
+  FROM studentSurvey
+  GROUP BY gender
+`);
+
+let depressionRateTotal = await dbQuery(`
+  SELECT
+    'Totalt' AS label,
+    ROUND((SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0) / COUNT(*), 2) AS depression
+  FROM studentSurvey
+`);
 
 // Data overview, first five rows
 
