@@ -1,6 +1,6 @@
 addMdToPage(`
 ## Studie om psykisk hälsa bland studenter i Indien.
-27867 repondenter har svarat på frågor om psykisk hälsa och depression relaterat till kön, ålder, sömnvanor, akademisk inriktning med mera.
+27867 respondenter har svarat på frågor om psykisk hälsa och depression relaterat till kön, ålder, sömnvanor, akademisk inriktning med mera.
 
 I den här rapporten har jag valt att titta närmare på kön, studierelaterad stress och sömnvanor för att se om det finns några korrelationer och eventuellt vilka slutsatser man skulle kunna dra från dessa.
 
@@ -8,11 +8,11 @@ ____
 `);
 
 let respondentData = await dbQuery(`
-
 SELECT 
     'Män och kvinnor' AS Kön,
     'Samtliga' AS Kategori,
-    COUNT(*) AS "Totalt antal"
+    COUNT(*) AS "Totalt antal",
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM studentSurvey), 1) AS "Andel (%)"
 FROM studentSurvey
 
 UNION ALL
@@ -24,7 +24,8 @@ SELECT
         ELSE gender 
     END AS Kön,
     'Samtliga respondenter' AS Kategori,
-    COUNT(*) AS "Totalt antal"
+    COUNT(*) AS "Totalt antal",
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM studentSurvey), 1) AS "Andel (%)"
 FROM studentSurvey
 GROUP BY gender
 
@@ -37,10 +38,11 @@ SELECT
         ELSE gender 
     END AS Kön,
     'Respondenter med depression' AS Kategori,
-    COUNT(*) AS "Totalt antal"
+    COUNT(*) AS "Totalt antal",
+    ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM studentSurvey), 1) AS "Andel (%)"
 FROM studentSurvey
 WHERE depression = 1
-GROUP BY gender
+GROUP BY gender;
 
   `)
 
