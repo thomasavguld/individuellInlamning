@@ -46,3 +46,13 @@ GROUP BY gender;
 
   `)
 
+tableFromData({ data: respondentData })
+
+console.log('respondentData', respondentData)
+
+addMdToPage(`
+
+  <BR>
+  
+  `)
+
