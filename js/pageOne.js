@@ -65,10 +65,10 @@ let colorMap = {
   'Kvinnor': '#edb2b2',
   'Män': '#6fa8dc',
   'Totalt': '#C1C0AE',
-  'Kvinnor Depression + Suicidal': '#e57373', // for the combined label
-  'Män Depression + Suicidal': '#1976d2', // for the combined label
-  'Totalt Depression': '#f1c40f', // for the combined label
-  'Totalt Depression + Suicidal': '#f39c12' // for the combined label
+  'Kvinnor Depression + Suicidal': '#e57373',
+  'Män Depression + Suicidal': '#1976d2',
+  'Totalt Depression': '#f1c40f',
+  'Totalt Depression + Suicidal': '#f39c12'
 };
 
 
@@ -176,7 +176,7 @@ drawGoogleChart({
     vAxis: {
       viewWindow: { min: 0, max: 100 }
     },
-    colors: [colorMap[comparisonGroup] || '#C1C0AE'] // Use color based on comparison group
+    colors: [colorMap[comparisonGroup] || '#C1C0AE']
   }
 });
 
@@ -229,7 +229,7 @@ let unifiedChartData = [
     group === 'Män' ? suicide : null,
     group === 'Totalt' ? depression : null,
     group === 'Totalt' ? suicide : null,
-    count // ✅ one line across all
+    count
   ]);
 });
 
@@ -247,13 +247,13 @@ drawGoogleChart({
     },
     seriesType: 'bars',
     series: {
-      0: { color: '#edb2b2' }, // Kvinnor Depression
-      1: { color: '#e57373' }, // Kvinnor Suicid
-      2: { color: '#6fa8dc' }, // Män Depression
-      3: { color: '#1976d2' }, // Män Suicid
-      4: { color: '#f1c40f' }, // Totalt Depression
-      5: { color: '#f39c12' }, // Totalt Suicid
-      6: { type: 'line', targetAxisIndex: 1, color: '#6aa84f' } // ONE LINE
+      0: { color: '#edb2b2' },
+      1: { color: '#e57373' },
+      2: { color: '#6fa8dc' },
+      3: { color: '#1976d2' },
+      4: { color: '#f1c40f' },
+      5: { color: '#f39c12' },
+      6: { type: 'line', targetAxisIndex: 1, color: '#6aa84f' }
     },
     isStacked: false
   }
