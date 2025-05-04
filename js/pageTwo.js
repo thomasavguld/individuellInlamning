@@ -2,14 +2,14 @@ addMdToPage(`
   <br> 
   <br> 
 
-  ### Akademisk prestation och press
+  ### Studierelaterad stress
 `);
 
 
 // Akademisk stress.
 let stressTable = await dbQuery(`
   SELECT academicPressure, AVG(depression) as avgDepression, AVG(suicidalThoughts) as avgSuicidal
-  FROM studentDepression
+  FROM studentSurvey
   GROUP BY academicPressure
   ORDER BY academicPressure
 `);
@@ -23,7 +23,8 @@ stressTable = stressTable.map(row => ({
 addMdToPage(`
   <br>
 
-  ### Akademisk stress
+  ### Studierelaterad stress.
+  Graderad 1-5, där 5 är högsta möjliga stressnivå.
 
   <br>
 
@@ -32,7 +33,7 @@ addMdToPage(`
 
 tableFromData({
   data: stressTable,
-  columnNames: ['Akademisk stress (1–5)', 'Genomsnittlig depression (%)', 'Genomsnittliga suicidtankar (%)']
+  columnNames: ['Stressnivå', 'Depressionsgrad (i procent)', 'Grad av suicidtankar (i procent)']
 });
 
 addMdToPage(`
@@ -59,10 +60,10 @@ const reverseDegreeTranslations = Object.fromEntries(
 );
 
 // Skapa dropdown-menyer.
-let rawDegrees = await dbQuery('SELECT DISTINCT degree FROM studentDepression');
+let rawDegrees = await dbQuery('SELECT DISTINCT degree FROM studentSurvey');
 let educationOptions = ['Totalt', ...rawDegrees.map(x => degreeTranslations[x.degree] || x.degree)];
 
-let rawGenders = await dbQuery('SELECT DISTINCT gender FROM studentDepression');
+let rawGenders = await dbQuery('SELECT DISTINCT gender FROM studentSurvey');
 let genderOptions = ['Totalt', ...rawGenders.map(x =>
   x.gender === 'Male' ? 'Män' : x.gender === 'Female' ? 'Kvinnor' : x.gender
 )];
@@ -85,7 +86,7 @@ let whereClause = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
 // Hämta data.
 let rawData = await dbQuery(`
   SELECT gender, degree, AVG(depression) as avgDepression
-  FROM studentDepression
+  FROM studentSurvey
   ${whereClause}
   GROUP BY gender, degree
 `);
