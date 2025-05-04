@@ -1,3 +1,0 @@
-data = Allt
-totalRespondents = Antal respondenter
-totalDepression = Alla med depression

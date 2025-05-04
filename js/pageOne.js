@@ -3,11 +3,9 @@ addMdToPage(`
 ## Depression och suicid
 
 
-Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
+Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid. 
 
-Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i vårt dataset.
-
-Siffrorna tycks också vara höga, med en förekomst av depression på närmare 60% av respondenterna.
+Både depression och självmordstankar tycks vanligt förekommande, oavsett kön.
 
 ___
 

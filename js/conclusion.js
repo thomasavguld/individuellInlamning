@@ -3,7 +3,7 @@ addMdToPage(`
 
 Den undersökning jag gjort av datan tyder på att förekomsten av psykisk ohälsa i form av depression och medföljande tankar på suicid är relativt hög bland studiens respondenter.
 
-När vi ser på den data vi har tillgång till i undersökningen tycks faktorer som kön tycks spela en mindre roll, medan variabler som studierelaterad stress, akademisk inriktining och sömnvanor påverkar mer.
+När vi ser på den data vi har tillgång till i undersökningen tycks faktorer som kön tycks spela en mindre roll, medan miljövariabler som studierelaterad stress, akademisk inriktining och sömnvanor påverkar mer.
 
 Tyvärr finns det anledning att förhålla sig skeptisk till vissa delar av datan, då resultaten av vissa beräkningar har en misstänkt låg varians. Till exempel ligger variationen i grad av depression mellan kvinnor och män endast på ett par tiondels procent.
 
@@ -19,9 +19,15 @@ ___
 
 ## Källor
 
-1. Times of India. The Cost of Being a Student in India: http://timesofindia.indiatimes.com/articleshow/112201810.cms?utm_source=contentofinterest&utm_medium=text&utm_campaign=cppst
+1. https://www.niti.gov.in/sites/default/files/2025-02/Expanding-Quality-Higher-Education-through-SPUs.pdf
 
 2. https://en.wikipedia.org/wiki/Higher_education_in_India
+
+3. https://visionias.in/current-affairs/monthly-magazine/2025-03-24/social-issues/quality-higher-education-in-india
+
+4. http://timesofindia.indiatimes.com/articleshow/112201810.cms?utm_source=contentofinterest&utm_medium=text&utm_campaign=cppst
+
+<BR>
 
 **Exempeldata från datasetet** (fem rader av 27 867):
 
