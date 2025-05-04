@@ -119,8 +119,8 @@ if (chosenMetric === 'Depression') {
 let chartData = [
   [chosenGroup, selectedRate]
 ]
-/////
 
+console.log(chartData)
 
 
 drawGoogleChart({
@@ -137,7 +137,11 @@ drawGoogleChart({
     hAxis: {
       viewWindow: { min: 0 }
     },
-    colors: [colorMap[chosenGroup] || '#C1C0AE']
+    colors: [colorMap[chosenGroup] || '#C1C0AE'],
+    tooltip: {
+      isHtml: true,
+      trigger: 'both'
+    }
   }
 });
 
