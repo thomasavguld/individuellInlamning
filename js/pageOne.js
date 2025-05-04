@@ -5,7 +5,9 @@ addMdToPage(`
 
 Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
 
-Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i datasetet.
+Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i vårt dataset.
+
+Siffrorna tycks också vara höga, med en förekomst av depression på närmare 60% av respondenterna.
 
 ___
 
@@ -28,8 +30,6 @@ tableFromData({
   data: depressionCountTable,
   columnNames: ['Kön', 'Studenter med depression']
 });
-
-
 
 let depressionData = await dbQuery(`
 SELECT 
@@ -170,6 +170,12 @@ drawGoogleChart({
   }
 });
 
+addMdToPage(`
+
+  <BR>
+  
+  `)
+
 let comparisonGroup = addDropdown('Kön', groupLabels, 'Män');
 let comparisonMetric = addDropdown('Problematik', metricTypes, 'Depression');
 
@@ -201,6 +207,12 @@ drawGoogleChart({
   }
 });
 
+addMdToPage(`
+
+  <BR>
+  
+  `)
+
 
 let combinedChartData = [
   ['Grupp', 'Grupp 1', 'Grupp 2'],
@@ -225,6 +237,12 @@ drawGoogleChart({
     ]
   }
 });
+
+addMdToPage(`
+
+  <BR>
+  
+  `)
 
 
 let unifiedChartData = [
