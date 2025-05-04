@@ -60,6 +60,11 @@ FROM studentSurvey
 
 
 /////
+const colorMap = {
+  'Kvinnor': '#edb2b2', // pink
+  'Män': '#6fa8dc',     // blue
+  'Totalt': '#C1C0AE'   // green
+};
 
 let depressionGroups = [
   {
@@ -132,7 +137,7 @@ drawGoogleChart({
     hAxis: {
       viewWindow: { min: 0 }
     },
-    colors: ['#C1C0AE']
+    colors: [colorMap[chosenGroup] || '#C1C0AE']
   }
 });
 
@@ -163,9 +168,10 @@ drawGoogleChart({
     vAxis: {
       viewWindow: { min: 0, max: 100 }
     },
-    colors: ['#C1C0AE']
+    colors: [colorMap[comparisonGroup] || '#C1C0AE'] // Use color based on comparison group
   }
 });
+
 
 let combinedChartData = [
   ['Grupp', 'Grupp 1', 'Grupp 2'],
@@ -184,7 +190,10 @@ drawGoogleChart({
     vAxis: {
       viewWindow: { min: 0, max: 100 }
     },
-    colors: ['#C1C0AE', '#C1C0AE']
+    colors: [
+      colorMap[chosenGroup] || '#C1C0AE',
+      colorMap[comparisonGroup] || '#C1C0AE'
+    ] // Use colors based on both groups
   }
 });
 
