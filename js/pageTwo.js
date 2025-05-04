@@ -124,7 +124,7 @@ drawGoogleChart({
   options: {
     title: 'Förekomst av depression per kön och utbildningsnivå',
     height: 600,
-    chartArea: { left: 50, right: 20, top: 50, bottom: 80 },
+    chartArea: { left: 100, right: 20, top: 50, bottom: 80 },  // Increased left margin for more space
     legend: { position: 'none' },
     hAxis: {
       title: 'Depression (i procent)',
@@ -136,7 +136,9 @@ drawGoogleChart({
     vAxis: {
       title: 'Kön och utbildning',
       minValue: 0,
-      textStyle: { fontSize: 10 }
+      textStyle: { fontSize: 12 },
+      slantedText: true,
+      slantedTextAngle: 45
     },
     titleTextStyle: {
       fontSize: 14
@@ -144,6 +146,7 @@ drawGoogleChart({
     tooltip: { isHtml: true }
   }
 });
+
 
 // Förbered data för att visa korrelation mellan akademisk stress och depression.
 let chartDataPressure = [
