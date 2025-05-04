@@ -146,3 +146,49 @@ drawGoogleChart({
   }
 });
 
+// Förbered data för att visa korrelation mellan akademisk stress och depression.
+let chartDataPressure = [
+  ['Stressnivå', 'Depression (%)', 'Suicidtankar (%)']
+];
+
+for (let row of stressTable) {
+  let level = parseInt(row.academicPressure);
+  let depression = parseFloat(row.avgDepression.replace('%', ''));
+  let suicidal = parseFloat(row.avgSuicidal.replace('%', ''));
+  chartDataPressure.push([level, depression, suicidal]);
+}
+
+addMdToPage(`
+  
+<BR>
+
+  `)
+
+// Rita linjediagram.
+drawGoogleChart({
+  type: 'LineChart',
+  data: chartDataPressure,
+  options: {
+    title: 'Samband mellan studierelaterad stress och psykisk ohälsa',
+    height: 400,
+    chartArea: { left: 60, right: 20, top: 50, bottom: 60 },
+    hAxis: {
+      title: 'Akademisk stressnivå (1 = låg, 5 = hög)',
+      minValue: 1,
+      maxValue: 5,
+      format: '0'
+    },
+    vAxis: {
+      title: 'Andel studenter (%)',
+      minValue: 0,
+      maxValue: 100
+    },
+    colors: ['#ff9900', '#dc3912'],
+    pointSize: 5,
+    titleTextStyle: {
+      fontSize: 14
+    },
+    legend: { position: 'bottom' }
+  }
+});
+
