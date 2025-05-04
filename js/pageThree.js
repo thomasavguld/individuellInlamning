@@ -1,104 +1,118 @@
 addMdToPage(`
   <br>
-  <br>
-  ### Sömn och psykisk hälsa efter kön
-  Genomsnittlig depression och förekomst av suicidtankar per sömnlängd, uppdelat efter kön.
+  ### Sömn och psykisk hälsa per sömnkategori
+  Depression och suicidtankar i procent, per kön och totalt. Linje visar antal studenter i varje kategori.
   <br>
 `);
 
-let rawGendersSleep = await dbQuery('SELECT DISTINCT gender FROM studentSurvey');
-let genderOptionsSleep = ['Totalt', ...rawGendersSleep.map(x =>
-  x.gender === 'Male' ? 'Män' : x.gender === 'Female' ? 'Kvinnor' : x.gender
-)];
-
-let selectedGenderSleep = addDropdown('Kön', genderOptionsSleep, 'Totalt');
-
-let filtersSleep = [];
-if (selectedGenderSleep !== 'Totalt') {
-  const genderValue = selectedGenderSleep === 'Män' ? 'Male' : selectedGenderSleep === 'Kvinnor' ? 'Female' : selectedGenderSleep;
-  filtersSleep.push(`gender = '${genderValue}'`);
-}
-
-let whereClauseSleep = filtersSleep.length > 0 ? `WHERE ${filtersSleep.join(' AND ')}` : '';
-
-// Hämta data: depression och suicidtankar per sömnkategori och kön
-let sleepStats = await dbQuery(`
-  SELECT sleepDuration, gender, AVG(depression) as avgDepression, AVG(suicidalThoughts) as avgSuicidal
+// Hämta data
+let rawStats = await dbQuery(`
+  SELECT sleepDuration, gender, COUNT(*) as count,
+         AVG(depression) as avgDepression,
+         AVG(suicidalThoughts) as avgSuicidal
   FROM studentSurvey
-  ${whereClauseSleep}
+  WHERE sleepDuration IN ('<4', '5-6', '7-8', '>8')
   GROUP BY sleepDuration, gender
-  ORDER BY sleepDuration
 `);
 
-// Förbered depression-data
-let chartDataDepression = [
-  ['Sömnlängd - Kön', 'Depression (%)', { role: 'style' }]
-];
+let categories = ['<4', '5-6', '7-8', '>8'];  // Exclude 'Others' category
+let genderMap = { 'Male': 'Män', 'Female': 'Kvinnor' };
 
-// Förbered suicidtankar-data
-let chartDataSuicidal = [
-  ['Sömnlängd - Kön', 'Suicidtankar (%)', { role: 'style' }]
-];
+// Initiera struktur
+let dataByCategory = {};
+categories.forEach(cat => {
+  dataByCategory[cat] = {
+    Kvinnor: { depression: 0, combined: 0, count: 0 },
+    Män: { depression: 0, combined: 0, count: 0 },
+    Totalt: { depression: 0, combined: 0, count: 0 }
+  };
+});
 
-for (let row of sleepStats) {
-  let genderLabel = row.gender === 'Male' ? 'Män' : row.gender === 'Female' ? 'Kvinnor' : row.gender;
-  let label = `${row.sleepDuration} tim - ${genderLabel}`;
-  let color = row.gender === 'Female' ? '#edb2b2' : row.gender === 'Male' ? '#6fa8dc' : 'gray';
+// Fyll på könsuppdelad data
+for (let row of rawStats) {
+  let cat = row.sleepDuration;
+  let gender = genderMap[row.gender] || null;
+  if (!gender) continue;
 
-  chartDataDepression.push([label, row.avgDepression * 100, color]);
-  chartDataSuicidal.push([label, row.avgSuicidal * 100, color]);
+  const depression = row.avgDepression * 100;
+  const combined = ((row.avgDepression + row.avgSuicidal) / 2) * 100;
+
+  dataByCategory[cat][gender] = {
+    depression,
+    combined,
+    count: row.count
+  };
 }
 
-// Diagram 1: Depression
+// Räkna ut totals
+for (let cat of categories) {
+  let f = dataByCategory[cat]['Kvinnor'];
+  let m = dataByCategory[cat]['Män'];
+  let totalCount = f.count + m.count;
+
+  if (totalCount > 0) {
+    const depTotal = (f.depression * f.count + m.depression * m.count) / totalCount;
+    const combTotal = (f.combined * f.count + m.combined * m.count) / totalCount;
+
+    dataByCategory[cat]['Totalt'] = {
+      depression: depTotal,
+      combined: combTotal,
+      count: totalCount
+    };
+  }
+}
+
+// Skapa diagramdata
+let comboChartData = [
+  ['Sömnlängd',
+    'Depression - Kvinnor', 'Depression+Suicid - Kvinnor',
+    'Depression - Män', 'Depression+Suicid - Män',
+    'Depression - Totalt', 'Depression+Suicid - Totalt',
+    'Antal studenter'
+  ]
+];
+
+for (let cat of categories) {
+  let row = dataByCategory[cat];
+  comboChartData.push([
+    cat,
+    row.Kvinnor.depression,
+    row.Kvinnor.combined,
+    row.Män.depression,
+    row.Män.combined,
+    row.Totalt.depression,
+    row.Totalt.combined,
+    row.Totalt.count
+  ]);
+}
+
+// Rita kombodiagram
 drawGoogleChart({
-  type: 'ColumnChart',
-  data: chartDataDepression,
+  type: 'ComboChart',
+  data: comboChartData,
   options: {
-    title: 'Depression per sömnkategori och kön (%)',
-    height: 500,
-    chartArea: { left: 50, right: 20, top: 50, bottom: 80 },
-    legend: { position: 'none' },
+    title: 'Depression och suicidtankar per sömnkategori',
+    height: 550,
+    chartArea: { left: 70, top: 60, bottom: 80 },
+    legend: { position: 'right' },
+    seriesType: 'bars',
+    series: {
+      0: { color: '#c2185b' },   // Kvinnor - Depression
+      1: { color: '#e57373' },   // Kvinnor - Combined
+      2: { color: '#1565c0' },   // Män - Depression
+      3: { color: '#64b5f6' },   // Män - Combined
+      4: { color: '#fbc02d' },   // Totalt - Depression
+      5: { color: '#ffd54f' },   // Totalt - Combined
+      6: { type: 'line', targetAxisIndex: 1, color: '#4caf50', lineWidth: 3, pointSize: 5 }  // Antal studenter
+    },
+    vAxes: {
+      0: { title: 'Procent (%)' },
+      1: { title: 'Antal studenter' }
+    },
     hAxis: {
-      title: 'Sömnlängd och kön',
-      slantedText: true,
-      slantedTextAngle: 45
-    },
-    vAxis: {
-      title: 'Depression (%)',
-      minValue: 0,
-      textStyle: { fontSize: 10 }
-    },
-    titleTextStyle: {
-      fontSize: 14
-    },
-    tooltip: { isHtml: true }
+      title: 'Sömnlängdskategori',
+      slantedText: false
+    }
   }
 });
-
-// Diagram 2: Suicidtankar
-drawGoogleChart({
-  type: 'ColumnChart',
-  data: chartDataSuicidal,
-  options: {
-    title: 'Suicidtankar per sömnkategori och kön (%)',
-    height: 500,
-    chartArea: { left: 50, right: 20, top: 50, bottom: 80 },
-    legend: { position: 'none' },
-    hAxis: {
-      title: 'Sömnlängd och kön',
-      slantedText: true,
-      slantedTextAngle: 45
-    },
-    vAxis: {
-      title: 'Suicidtankar (%)',
-      minValue: 0,
-      textStyle: { fontSize: 10 }
-    },
-    titleTextStyle: {
-      fontSize: 14
-    },
-    tooltip: { isHtml: true }
-  }
-});
-
 

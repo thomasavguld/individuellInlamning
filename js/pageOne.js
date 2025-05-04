@@ -3,32 +3,12 @@ addMdToPage(`
 ## Depression och suicid
 
 
-Här tittar vi på graden av depression bland de undersökta studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
+Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
 
 Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i datasetet.
-<BR>
-___
+
 
 `);
-
-let depressionTable = await dbQuery(`
-  SELECT 
-    CASE 
-      WHEN gender = 'Male' THEN 'Män'
-      WHEN gender = 'Female' THEN 'Kvinnor'
-      ELSE gender
-    END AS gender,
-    COUNT(*) AS 'Antal studenter med depression'
-  FROM studentSurvey
-  WHERE depression = 1
-  GROUP BY gender;
-`);
-
-tableFromData({
-  data: depressionTable,
-  columnNames: ['Kön', 'Antal studenter med depression']
-});
-
 
 let depressionData = await dbQuery(`
 SELECT 
@@ -85,10 +65,10 @@ let colorMap = {
   'Kvinnor': '#edb2b2',
   'Män': '#6fa8dc',
   'Totalt': '#C1C0AE',
-  'Kvinnor Depression + Suicidal': '#e57373',
-  'Män Depression + Suicidal': '#1976d2',
-  'Totalt Depression': '#f1c40f',
-  'Totalt Depression + Suicidal': '#f39c12'
+  'Kvinnor Depression + Suicidal': '#e57373', // for the combined label
+  'Män Depression + Suicidal': '#1976d2', // for the combined label
+  'Totalt Depression': '#f1c40f', // for the combined label
+  'Totalt Depression + Suicidal': '#f39c12' // for the combined label
 };
 
 
@@ -196,7 +176,7 @@ drawGoogleChart({
     vAxis: {
       viewWindow: { min: 0, max: 100 }
     },
-    colors: [colorMap[comparisonGroup] || '#C1C0AE']
+    colors: [colorMap[comparisonGroup] || '#C1C0AE'] // Use color based on comparison group
   }
 });
 
@@ -249,7 +229,7 @@ let unifiedChartData = [
     group === 'Män' ? suicide : null,
     group === 'Totalt' ? depression : null,
     group === 'Totalt' ? suicide : null,
-    count
+    count // ✅ one line across all
   ]);
 });
 
@@ -267,13 +247,13 @@ drawGoogleChart({
     },
     seriesType: 'bars',
     series: {
-      0: { color: '#edb2b2' },
-      1: { color: '#e57373' },
-      2: { color: '#6fa8dc' },
-      3: { color: '#1976d2' },
-      4: { color: '#f1c40f' },
-      5: { color: '#f39c12' },
-      6: { type: 'line', targetAxisIndex: 1, color: '#6aa84f' }
+      0: { color: '#edb2b2' }, // Kvinnor Depression
+      1: { color: '#e57373' }, // Kvinnor Suicid
+      2: { color: '#6fa8dc' }, // Män Depression
+      3: { color: '#1976d2' }, // Män Suicid
+      4: { color: '#f1c40f' }, // Totalt Depression
+      5: { color: '#f39c12' }, // Totalt Suicid
+      6: { type: 'line', targetAxisIndex: 1, color: '#6aa84f' } // ONE LINE
     },
     isStacked: false
   }
