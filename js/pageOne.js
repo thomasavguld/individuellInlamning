@@ -7,8 +7,29 @@ Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi
 
 Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i datasetet.
 
+___
+
 
 `);
+
+let depressionCountTable = await dbQuery(`
+  SELECT 
+    CASE 
+        WHEN gender = 'Male' THEN 'Män'
+        WHEN gender = 'Female' THEN 'Kvinnor'
+        ELSE gender 
+    END AS Kön,
+    SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) AS Depressionsgrad
+  FROM studentSurvey
+  GROUP BY gender;
+`);
+
+tableFromData({
+  data: depressionCountTable,
+  columnNames: ['Kön', 'Studenter med depression']
+});
+
+
 
 let depressionData = await dbQuery(`
 SELECT 

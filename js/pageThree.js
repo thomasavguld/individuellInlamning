@@ -5,7 +5,7 @@ addMdToPage(`
   <br>
 `);
 
-// Hämta data
+
 let rawStats = await dbQuery(`
   SELECT sleepDuration, gender, COUNT(*) as count,
          AVG(depression) as avgDepression,
@@ -15,10 +15,10 @@ let rawStats = await dbQuery(`
   GROUP BY sleepDuration, gender
 `);
 
-let categories = ['<4', '5-6', '7-8', '>8'];  // Exclude 'Others' category
+let categories = ['<4', '5-6', '7-8', '>8'];
 let genderMap = { 'Male': 'Män', 'Female': 'Kvinnor' };
 
-// Initiera struktur
+
 let dataByCategory = {};
 categories.forEach(cat => {
   dataByCategory[cat] = {
@@ -28,7 +28,7 @@ categories.forEach(cat => {
   };
 });
 
-// Fyll på könsuppdelad data
+
 for (let row of rawStats) {
   let cat = row.sleepDuration;
   let gender = genderMap[row.gender] || null;
@@ -44,7 +44,7 @@ for (let row of rawStats) {
   };
 }
 
-// Räkna ut totals
+
 for (let cat of categories) {
   let f = dataByCategory[cat]['Kvinnor'];
   let m = dataByCategory[cat]['Män'];
@@ -62,7 +62,7 @@ for (let cat of categories) {
   }
 }
 
-// Skapa diagramdata
+
 let comboChartData = [
   ['Sömnlängd',
     'Depression - Kvinnor', 'Depression+Suicid - Kvinnor',
@@ -91,26 +91,26 @@ drawGoogleChart({
   type: 'ComboChart',
   data: comboChartData,
   options: {
-    title: 'Depression och suicidtankar per sömnkategori',
+    title: 'Sömn i relation till depression/suicidtankar',
     height: 550,
     chartArea: { left: 70, top: 60, bottom: 80 },
     legend: { position: 'right' },
     seriesType: 'bars',
     series: {
-      0: { color: '#c2185b' },   // Kvinnor - Depression
-      1: { color: '#e57373' },   // Kvinnor - Combined
-      2: { color: '#1565c0' },   // Män - Depression
-      3: { color: '#64b5f6' },   // Män - Combined
-      4: { color: '#fbc02d' },   // Totalt - Depression
-      5: { color: '#ffd54f' },   // Totalt - Combined
-      6: { type: 'line', targetAxisIndex: 1, color: '#4caf50', lineWidth: 3, pointSize: 5 }  // Antal studenter
+      0: { color: '#c2185b' },
+      1: { color: '#e57373' },
+      2: { color: '#1565c0' },
+      3: { color: '#64b5f6' },
+      4: { color: '#fbc02d' },
+      5: { color: '#ffd54f' },
+      6: { type: 'line', targetAxisIndex: 1, color: '#4caf50', lineWidth: 3, pointSize: 5 }
     },
     vAxes: {
-      0: { title: 'Procent (%)' },
+      0: { title: 'Procent depression/sucicidtankar' },
       1: { title: 'Antal studenter' }
     },
     hAxis: {
-      title: 'Sömnlängdskategori',
+      title: 'Timmar sömn',
       slantedText: false
     }
   }
