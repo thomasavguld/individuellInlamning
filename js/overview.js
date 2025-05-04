@@ -2,7 +2,7 @@ addMdToPage(`
 ## Studie om psykisk hälsa bland studenter i Indien.
 Studenter i Indien har svarat på frågor om psykisk hälsa och depression relaterat till kön, ålder, sömnvanor, akademisk inriktning med mera.
 
-I den här rapporten har jag valt att titta närmare på kön, studierelaterad stress och sömnvanor för att se om det finns några korrelationer och eventuellt vilka slutsatser man skulle kunna dra från dessa.
+I den här rapporten har jag valt att titta närmare på kön, studierelaterad stress och sömnvanor för att se om det finns några korrelationer däremellan, samt eventuellt vilka slutsatser man skulle kunna dra från dessa.
 
 ____
 `);
