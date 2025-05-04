@@ -1,3 +1,10 @@
+addMdToPage(`
+## Källor
+Exempeldata från datasetet (fem rader av 27 867):
+
+____
+`);
+
 let totalData = await dbQuery(`
 
   SELECT * 
