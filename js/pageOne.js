@@ -7,12 +7,10 @@ Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi
 
 Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i datasetet.
 
-Male	15528 Depressed: 9100
-Female	12339 Depressed:7207
+
 `);
 
 let depressionData = await dbQuery(`
--- Extend depressionData query:
 SELECT 
   CASE 
       WHEN gender = 'Male' THEN 'Män'
@@ -63,14 +61,16 @@ SELECT
 FROM studentSurvey
 `)
 
-
-
-/////
-const colorMap = {
-  'Kvinnor': '#edb2b2', // pink
-  'Män': '#6fa8dc',     // blue
-  'Totalt': '#C1C0AE'   // green
+let colorMap = {
+  'Kvinnor': '#edb2b2',
+  'Män': '#6fa8dc',
+  'Totalt': '#C1C0AE',
+  'Kvinnor Depression + Suicidal': '#e57373', // for the combined label
+  'Män Depression + Suicidal': '#1976d2', // for the combined label
+  'Totalt Depression': '#f1c40f', // for the combined label
+  'Totalt Depression + Suicidal': '#f39c12' // for the combined label
 };
+
 
 let depressionGroups = [
   {
@@ -125,8 +125,6 @@ if (chosenMetric === 'Depression') {
 let chartData = [
   [chosenGroup, selectedRate]
 ]
-
-console.log(chartData)
 
 
 drawGoogleChart({
@@ -206,3 +204,60 @@ drawGoogleChart({
     ]
   }
 });
+
+
+let unifiedChartData = [
+  ['Grupp',
+    'Depression (%) - Kvinnor', 'Suicid (%) - Kvinnor',
+    'Depression (%) - Män', 'Suicid (%) - Män',
+    'Depression (%) - Totalt', 'Suicid (%) - Totalt',
+    'Antal studenter']
+];
+
+['Kvinnor', 'Män', 'Totalt'].forEach(group => {
+  let depressionEntry = depressionData.find(x => x.label === group);
+  let suicideEntry = depressionSuicideData.find(x => x.label === group);
+  let depression = depressionEntry?.depressionRate ?? null;
+  let suicide = suicideEntry?.depressionAndSuicidalRate ?? null;
+  let count = depressionEntry?.totalCount ?? null;
+
+  unifiedChartData.push([
+    group,
+    group === 'Kvinnor' ? depression : null,
+    group === 'Kvinnor' ? suicide : null,
+    group === 'Män' ? depression : null,
+    group === 'Män' ? suicide : null,
+    group === 'Totalt' ? depression : null,
+    group === 'Totalt' ? suicide : null,
+    count // ✅ one line across all
+  ]);
+});
+
+drawGoogleChart({
+  type: 'ComboChart',
+  data: unifiedChartData,
+  options: {
+    title: 'Depression och tankar om suicid bland studenter',
+    height: 500,
+    chartArea: { left: 80 },
+    legend: { position: 'right' },
+    vAxes: {
+      0: { title: 'Procent (%)', minValue: 0 },
+      1: { title: 'Antal studenter', minValue: 0 }
+    },
+    seriesType: 'bars',
+    series: {
+      0: { color: '#edb2b2' }, // Kvinnor Depression
+      1: { color: '#e57373' }, // Kvinnor Suicid
+      2: { color: '#6fa8dc' }, // Män Depression
+      3: { color: '#1976d2' }, // Män Suicid
+      4: { color: '#f1c40f' }, // Totalt Depression
+      5: { color: '#f39c12' }, // Totalt Suicid
+      6: { type: 'line', targetAxisIndex: 1, color: '#6aa84f' } // ONE LINE
+    },
+    isStacked: false
+  }
+});
+
+
+
