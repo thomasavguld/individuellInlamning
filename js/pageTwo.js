@@ -1,8 +1,5 @@
 addMdToPage(`
-  <br> 
-  <br> 
-
-  ### Studierelaterad stress
+  ## Studierelaterad stress
 
   När vi tittar på datan över respondenternas studierelaterade stress ser vi en tydlig korrelation mellan stressnivå och andelen studenter med depression. 
   
@@ -30,9 +27,9 @@ stressTable = stressTable.map(row => ({
 }));
 
 addMdToPage(`
-  <br>
 
-  ### Studierelaterad stress.
+  **Studierelaterad stress.**
+  <BR>
   Graderad 1-5, där 5 indikerar högsta möjliga stressnivå.
 
   <br>
@@ -50,9 +47,8 @@ addMdToPage(`
   `)
 
 addMdToPage(`
-<br>
 
-### Kön och utbildningsnivå
+**Kön och utbildningsnivå.**
 
 `)
 
@@ -124,7 +120,7 @@ drawGoogleChart({
   options: {
     title: 'Förekomst av depression per kön och utbildningsnivå',
     height: 600,
-    chartArea: { left: 100, right: 20, top: 50, bottom: 80 },  // Increased left margin for more space
+    chartArea: { left: 100, right: 20, top: 50, bottom: 80 },
     legend: { position: 'none' },
     hAxis: {
       title: 'Depression (i procent)',
@@ -148,7 +144,6 @@ drawGoogleChart({
 });
 
 
-// Förbered data för att visa korrelation mellan akademisk stress och depression.
 let chartDataPressure = [
   ['Stressnivå', 'Depression (%)', 'Suicidtankar (%)']
 ];

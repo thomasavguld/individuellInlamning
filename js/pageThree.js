@@ -1,8 +1,12 @@
 addMdToPage(`
+  ## Sömn
+  Datan visar ett tydligt samband mellan respondenternas sömnvanor och deras psykiska hälsa.
+
+  De studenter som sover minst tycks må sämst, medan de studenter som sover mer än åtta timmar per natt verkar må bäst.
+
+  OBS! Detta är ett diagram som kombinerar variabler både i procent och absoluta tal, varför staplarnas längd kan ge intryck av att variansen är större än vad den är. 
   <br>
-  ### Sömn och psykisk hälsa per sömnkategori
-  Depression och suicidtankar i procent, per kön och totalt. Linje visar antal studenter i varje kategori.
-  <br>
+  ____
 `);
 
 
