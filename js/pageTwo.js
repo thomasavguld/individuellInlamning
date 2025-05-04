@@ -6,12 +6,13 @@ addMdToPage(`
 
   När vi tittar på datan över respondenternas studierelaterade stress ser vi en tydlig korrelation mellan stressnivå och andelen studenter med depression. 
   
-  Skillnaden mellan könen är små.
+  Skillnaden mellan könen tycks vara små.
 
-  Vi ser marginella skillnader mellan de olika akademiska inriktningarna. Endast kategorin "Övriga utbildningar" står ut. Tyvärr säger inte datasetet något om vilken typ av utbildningar denna kategori innebär.
+  Vi ser marginella skillnader mellan de olika akademiska inriktningarna. Endast kategorin "Övriga utbildningar" står ut. Tyvärr säger inte datasetet något om vilken typ av utbildningar denna kategori innehåller.
 
   På det hela taget verkar valet av utbildning som sådan inte säga mycket om förekomsten av depression (om vi utesluter kategorin "Övriga utbildningar).
 
+  ___
 
 `);
 
