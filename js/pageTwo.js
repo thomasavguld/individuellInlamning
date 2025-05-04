@@ -55,7 +55,6 @@ addMdToPage(`
 
 `)
 
-// Översättningar.
 const degreeTranslations = {
   'bachelor': 'Kandidat',
   'master': 'Magister',
@@ -67,7 +66,7 @@ const reverseDegreeTranslations = Object.fromEntries(
   Object.entries(degreeTranslations).map(([eng, swe]) => [swe, eng])
 );
 
-// Skapa dropdown-menyer.
+
 let rawDegrees = await dbQuery('SELECT DISTINCT degree FROM studentSurvey');
 let educationOptions = ['Totalt', ...rawDegrees.map(x => degreeTranslations[x.degree] || x.degree)];
 
@@ -79,7 +78,7 @@ let genderOptions = ['Totalt', ...rawGenders.map(x =>
 let selectedEducation = addDropdown('Utbildningsnivå', educationOptions, 'Totalt');
 let selectedGender = addDropdown('Kön', genderOptions, 'Totalt');
 
-// SQL-filter.
+
 let filters = [];
 if (selectedEducation !== 'Totalt') {
   filters.push(`degree = '${reverseDegreeTranslations[selectedEducation] || selectedEducation}'`);
@@ -91,7 +90,7 @@ if (selectedGender !== 'Totalt') {
 
 let whereClause = filters.length > 0 ? `WHERE ${filters.join(' AND ')}` : '';
 
-// Hämta data.
+
 let rawData = await dbQuery(`
   SELECT gender, degree, AVG(depression) as avgDepression
   FROM studentSurvey
@@ -99,7 +98,7 @@ let rawData = await dbQuery(`
   GROUP BY gender, degree
 `);
 
-// Förbered data för Google Chart.
+
 let chartData = [
   ['Kön - Utbildning', 'Genomsnittlig depression (%)', { role: 'style' }]
 ];
@@ -118,7 +117,6 @@ for (let row of rawData) {
   chartData.push([label, depression, color]);
 }
 
-// Rita diagrammet.
 drawGoogleChart({
   type: 'BarChart',
   data: chartData,
@@ -164,7 +162,6 @@ addMdToPage(`
 
   `)
 
-// Rita linjediagram.
 drawGoogleChart({
   type: 'LineChart',
   data: chartDataPressure,
