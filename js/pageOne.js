@@ -3,12 +3,32 @@ addMdToPage(`
 ## Depression och suicid
 
 
-Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
+Här tittar vi på graden av depression bland de undersökta studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
 
 Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i datasetet.
-
+<BR>
+___
 
 `);
+
+let depressionTable = await dbQuery(`
+  SELECT 
+    CASE 
+      WHEN gender = 'Male' THEN 'Män'
+      WHEN gender = 'Female' THEN 'Kvinnor'
+      ELSE gender
+    END AS gender,
+    COUNT(*) AS 'Antal studenter med depression'
+  FROM studentSurvey
+  WHERE depression = 1
+  GROUP BY gender;
+`);
+
+tableFromData({
+  data: depressionTable,
+  columnNames: ['Kön', 'Antal studenter med depression']
+});
+
 
 let depressionData = await dbQuery(`
 SELECT 
