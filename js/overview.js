@@ -46,22 +46,3 @@ GROUP BY gender;
 
   `)
 
-tableFromData({ data: respondentData })
-
-console.log('respondentData', respondentData)
-
-addMdToPage(`
-
-  <BR>
-  
-  `)
-
-let totalData = await dbQuery(`
-
-  SELECT * 
-  FROM studentSurvey
-  LIMIT 5
-  
-  `)
-
-tableFromData({ data: totalData })
