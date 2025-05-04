@@ -3,6 +3,8 @@ addMdToPage(`
   <br> 
 
   ### Studierelaterad stress
+
+  
 `);
 
 
@@ -33,7 +35,7 @@ addMdToPage(`
 
 tableFromData({
   data: stressTable,
-  columnNames: ['Stressnivå', 'Depressionsgrad (i procent)', 'Grad av suicidtankar (i procent)']
+  columnNames: ['Stressnivå', 'Andel deprimerade studenter (i procent)', 'Studenter med tankar på suicid (i procent)']
 });
 
 addMdToPage(`
@@ -112,20 +114,22 @@ for (let row of rawData) {
 
 // Rita diagrammet.
 drawGoogleChart({
-  type: 'ColumnChart',
+  type: 'BarChart',
   data: chartData,
   options: {
-    title: 'Genomsnittlig depression per kön och utbildningsnivå (%)',
+    title: 'Förekomst av depression per kön och utbildningsnivå',
     height: 600,
     chartArea: { left: 50, right: 20, top: 50, bottom: 80 },
     legend: { position: 'none' },
     hAxis: {
-      title: 'Kön och utbildning',
+      title: 'Depression (i procent)',
       slantedText: true,
-      slantedTextAngle: 45
+      slantedTextAngle: 45,
+      minValue: 0,
+      maxValue: 100
     },
     vAxis: {
-      title: 'Depression (%)',
+      title: 'Kön och utbildning',
       minValue: 0,
       textStyle: { fontSize: 10 }
     },
@@ -135,3 +139,4 @@ drawGoogleChart({
     tooltip: { isHtml: true }
   }
 });
+
