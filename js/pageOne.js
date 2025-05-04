@@ -1,22 +1,37 @@
 
+addMdToPage(`
+## Depression och suicid
+
+
+Här tittar vi på graden av depression bland studenterna, uppdelat på kön. Vi kan också jämföra studenter som utöver depression också uttrycker tankar om suicid.
+
+Värt att notera är den anmärkningsvärt lilla varians det finns mellan grupperna, utifrån de siffror vi har i datasetet.
+
+Male	15528 Depressed: 9100
+Female	12339 Depressed:7207
+`);
+
 let depressionData = await dbQuery(`
-  SELECT 
-    CASE 
-        WHEN gender = 'Male' THEN 'Män'
-        WHEN gender = 'Female' THEN 'Kvinnor'
-        ELSE gender 
-    END AS label,
-    ROUND(SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS depressionRate,
-    ROUND(SUM(CASE WHEN suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS suicidalThoughtsRate
+-- Extend depressionData query:
+SELECT 
+  CASE 
+      WHEN gender = 'Male' THEN 'Män'
+      WHEN gender = 'Female' THEN 'Kvinnor'
+      ELSE gender 
+  END AS label,
+  ROUND(SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS depressionRate,
+  ROUND(SUM(CASE WHEN suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS suicidalThoughtsRate,
+  COUNT(*) AS totalCount
 FROM studentSurvey
 GROUP BY gender
 
 UNION ALL
 
 SELECT 
-    'Totalt' AS label,
-    ROUND(SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS depressionRate,
-    ROUND(SUM(CASE WHEN suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS suicidalThoughtsRate
+  'Totalt' AS label,
+  ROUND(SUM(CASE WHEN depression = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2),
+  ROUND(SUM(CASE WHEN suicidalThoughts = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2),
+  COUNT(*)
 FROM studentSurvey
 `)
 
