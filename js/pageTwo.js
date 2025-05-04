@@ -24,7 +24,7 @@ addMdToPage(`
   <br>
 
   ### Studierelaterad stress.
-  Graderad 1-5, där 5 är högsta möjliga stressnivå.
+  Graderad 1-5, där 5 indikerar högsta möjliga stressnivå.
 
   <br>
 
@@ -49,10 +49,10 @@ addMdToPage(`
 
 // Översättningar.
 const degreeTranslations = {
-  'bachelor': 'Kandidatnivå',
-  'master': 'Magisternivå',
-  'doctor': 'Doktorandnivå',
-  'other': 'Övriga'
+  'bachelor': 'Kandidat',
+  'master': 'Magister',
+  'doctor': 'Doktorand',
+  'other': 'Övriga utbildningar'
 };
 
 const reverseDegreeTranslations = Object.fromEntries(
@@ -97,8 +97,8 @@ let chartData = [
 ];
 
 let colorMapping = {
-  'Male': 'color: #5dade2',
-  'Female': 'color: #f1948a'
+  'Female': '#edb2b2',
+  'Male': '#6fa8dc',
 };
 
 for (let row of rawData) {
