@@ -170,7 +170,7 @@ drawGoogleChart({
     height: 400,
     chartArea: { left: 60, right: 20, top: 50, bottom: 60 },
     hAxis: {
-      title: 'Akademisk stressnivå (1 = låg, 5 = hög)',
+      title: 'Studierelaterad stress (1 = låg, 5 = hög)',
       minValue: 1,
       maxValue: 5,
       format: '0'
