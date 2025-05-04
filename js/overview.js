@@ -59,6 +59,145 @@ FROM studentSurvey
 
 
 
+/////
+
+let depressionGroups = [
+  {
+    label: 'Depression kvinnor',
+    group: 'Kvinnor',
+    rate: depressionData.find(x => x.label === 'Kvinnor')?.depressionRate ?? 0
+  },
+  {
+    label: 'Depression män',
+    group: 'Män',
+    rate: depressionData.find(x => x.label === 'Män')?.depressionRate ?? 0
+  },
+  {
+    label: 'Depression totalt',
+    group: 'Totalt',
+    rate: depressionData.find(x => x.label === 'Totalt')?.depressionRate ?? 0
+  }
+];
+
+let depressionSuicideGroups = [
+  {
+    label: 'Depression och suicidala tankar kvinnor',
+    group: 'Kvinnor',
+    rate: depressionSuicideData.find(x => x.label === 'Kvinnor')?.depressionAndSuicidalRate ?? 0
+  },
+  {
+    label: 'Depression och suicidala tankar män',
+    group: 'Män',
+    rate: depressionSuicideData.find(x => x.label === 'Män')?.depressionAndSuicidalRate ?? 0
+  },
+  {
+    label: 'Depression och suicidala tankar totalt',
+    group: 'Totalt',
+    rate: depressionSuicideData.find(x => x.label === 'Totalt')?.depressionAndSuicidalRate ?? 0
+  }
+];
+
+let groupLabels = ['Kvinnor', 'Män'];
+let metricTypes = ['Depression', 'Depression och suicidala tankar'];
+
+let chosenGroup = addDropdown('Kön', groupLabels, 'Kvinnor');
+let chosenMetric = addDropdown('Problematik', metricTypes, 'Depression');
+
+let selectedRate = 0;
+
+if (chosenMetric === 'Depression') {
+  selectedRate = depressionGroups.find(x => x.group === chosenGroup)?.rate ?? 0;
+} else if (chosenMetric === 'Depression och suicidala tankar') {
+  selectedRate = depressionSuicideGroups.find(x => x.group === chosenGroup)?.rate ?? 0;
+}
+
+let chartData = [
+  [chosenGroup, selectedRate]
+]
+/////
+
+
+
+drawGoogleChart({
+  type: 'ColumnChart',
+  data: makeChartFriendly(chartData),
+  options: {
+    title: chosenMetric + ' per kön (i procent)',
+    legend: { position: 'none' },
+    height: 500,
+    chartArea: { left: 80 },
+    vAxis: {
+      viewWindow: { min: 0, max: 100 }
+    },
+    hAxis: {
+      viewWindow: { min: 0 }
+    },
+    colors: ['#C1C0AE']
+  }
+});
+
+let comparisonGroup = addDropdown('Kön', groupLabels, 'Män');
+let comparisonMetric = addDropdown('Problematik', metricTypes, 'Depression');
+
+let comparisonRate = 0;
+
+if (comparisonMetric === 'Depression') {
+  comparisonRate = depressionGroups.find(x => x.group === comparisonGroup)?.rate ?? 0;
+} else if (comparisonMetric === 'Depression och suicidala tankar') {
+  comparisonRate = depressionSuicideGroups.find(x => x.group === comparisonGroup)?.rate ?? 0;
+}
+
+let comparisonChartData = [
+  [comparisonGroup, comparisonRate]
+];
+
+
+drawGoogleChart({
+  type: 'ColumnChart',
+  data: makeChartFriendly(comparisonChartData),
+  options: {
+    legend: { position: 'none' },
+    title: comparisonMetric + ' i jämförelse',
+    height: 500,
+    chartArea: { left: 80 },
+    vAxis: {
+      viewWindow: { min: 0, max: 100 }
+    },
+    colors: ['#C1C0AE']
+  }
+});
+
+let combinedChartData = [
+  ['Grupp', 'Grupp 1', 'Grupp 2'],
+  [chosenGroup + ' (' + chosenMetric + ')', selectedRate, null],
+  [comparisonGroup + ' (' + comparisonMetric + ')', null, comparisonRate]
+];
+
+drawGoogleChart({
+  type: 'ColumnChart',
+  data: combinedChartData,
+  options: {
+    legend: { position: 'none' },
+    title: 'Jämförelse: ' + chosenMetric + ' vs ' + comparisonMetric,
+    height: 500,
+    chartArea: { left: 80 },
+    vAxis: {
+      viewWindow: { min: 0, max: 100 }
+    },
+    colors: ['#C1C0AE', '#C1C0AE']
+  }
+});
+
+
+////
+
+
+
+
+/*
+
+
+
 
 let depressionGroups = [
   {
@@ -95,50 +234,31 @@ let depressionSuicideGroups = [
       .find(x => x.label === 'Totalt')?.depressionAndSuicidalRate ?? 0
   }
 ];
+console.log('depressionGroups', depressionGroups)
+////
+
+let groupLabels = ['Kvinnor', 'Män', 'Totalt'];
+let metricTypes = ['Depression', 'Depression och suicidala tankar'];
+
+let chosenGroup = addDropdown('Välj grupp', groupLabels, 'Kvinnor');
+let chosenMetric = addDropdown('Välj typ av mått', metricTypes, 'Depression');
+
+let selectedRate = 0;
 
 
-/////
-let groupOptions = [
-  { label: 'Depression', data: depressionGroups },
-  { label: 'Depression och suicidala tankar', data: depressionSuicideGroups }
+///// Här nånstans tror jag problemet är
+
+if (chosenMetric === 'Depression') {
+  selectedRate = depressionGroups.find(x => x.label === chosenGroup)?.rate ?? 0;
+} else if (chosenMetric === 'Depression och suicidala tankar') {
+  selectedRate = depressionSuicideGroups.find(x => x.label === chosenGroup)?.rate ?? 0;
+}
+
+let chartData = [
+  [chosenGroup, selectedRate]
 ];
 
-let chosenGroupLabel = addDropdown('Välj grupp', groupOptions.map(x => x.label), 'Depression');
-
-let selectedGroup = groupOptions.find(x => x.label === chosenGroupLabel);
-let chartData = selectedGroup.data.map(x => ({
-  label: x.label,
-  value: x.rate
-}));
-
-
-
-/////
-
-
-
-drawGoogleChart({
-  type: 'ColumnChart',
-  data: makeChartFriendly(chartData),
-  options: {
-    legend: { position: 'none' },
-    title: 'Depression uppdelat på kön, samt totalt (i procent)',
-    height: 500,
-    chartArea: { left: 80 },
-    vAxis: {
-      viewWindow: { min: 0, max: 100 }
-    },
-    hAxis: {
-      viewWindow: { min: 0 }
-    },
-    colors: ['pink', 'blue']
-  }
-});
-
-
-/*
-
-
+console.log('chartData', chartData)
 let depressionRateWomen = (await dbQuery(
   `SELECT
 IF(gender = 'Male', 'Män', IF(gender = 'Female', 'Kvinnor', gender)) AS label,
